@@ -12,6 +12,7 @@ import {
   GraduationCap,
   LayoutDashboard,
   LogOut,
+  Rocket,
   Sparkles,
   X,
 } from "lucide-react";
@@ -35,6 +36,14 @@ const learningLinks = [
     icon: Sparkles,
     internal: false,
     label: "Open W3Schools",
+  },
+];
+
+const galleryApps = [
+  {
+    title: "Tikkun Tool",
+    description: "A web app built by Mesivta students using the IDE.",
+    href: "https://tikkun-tool.pages.dev/",
   },
 ];
 
@@ -285,6 +294,43 @@ export default function DashboardPage() {
                 </div>
               </div>
             </div>
+          </div>
+        </section>
+
+        <section data-tour="gallery" className="mt-12">
+          <div className="mb-4">
+            <h2 className="text-lg font-semibold">Gallery</h2>
+            <p className="mt-1 text-xs text-muted">Apps built by students using the Mesivta IDE.</p>
+          </div>
+          <div className="grid gap-3 md:grid-cols-3">
+            {galleryApps.map((app) => (
+              <a
+                key={app.title}
+                href={app.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group relative flex min-h-36 flex-col justify-between overflow-hidden rounded-xl border border-border bg-panel/70 p-5 backdrop-blur-sm transition duration-200 hover:-translate-y-1 hover:border-accent/50 hover:bg-panel-2/70 hover:shadow-pop"
+              >
+                <div
+                  aria-hidden
+                  className="pointer-events-none absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-[hsl(var(--accent)/0.55)] to-transparent opacity-0 transition duration-200 group-hover:opacity-100"
+                />
+                <div className="flex items-start justify-between gap-3">
+                  <span className="rounded-md bg-accent-soft p-2 text-accent ring-1 ring-[hsl(var(--accent)/0.25)]">
+                    <Rocket className="size-5" />
+                  </span>
+                  <ExternalLink className="size-4 text-muted-2" />
+                </div>
+                <div className="mt-5">
+                  <h3 className="font-semibold">{app.title}</h3>
+                  <p className="mt-1 text-xs leading-5 text-muted">{app.description}</p>
+                  <span className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-accent">
+                    Open app
+                    <ArrowRight className="size-3 transition-transform group-hover:translate-x-0.5" />
+                  </span>
+                </div>
+              </a>
+            ))}
           </div>
         </section>
       </div>
