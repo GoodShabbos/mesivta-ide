@@ -4,20 +4,17 @@ import {
   Files,
   BookOpen,
   Bug,
-  TerminalSquare,
   Search,
   GitBranch,
   Settings,
   type LucideIcon,
 } from "lucide-react";
 import { useDebugStore } from "@/stores/useDebugStore";
-import { useTerminalStore } from "@/stores/useTerminalStore";
 
 export type ActivityView =
   | "explorer"
   | "guide"
   | "debug"
-  | "terminal"
   | "search"
   | "scm"
   | "settings";
@@ -34,7 +31,6 @@ const TOP_ITEMS: ActivityItem[] = [
   { id: "explorer", icon: Files, label: "Explorer" },
   { id: "guide", icon: BookOpen, label: "Coding Guide" },
   { id: "debug", icon: Bug, label: "Run and Debug" },
-  { id: "terminal", icon: TerminalSquare, label: "Terminal" },
 ];
 
 const BOTTOM_ITEMS: ActivityItem[] = [
@@ -52,34 +48,21 @@ export function ActivityBar({ active, onSelect }: ActivityBarProps) {
   // Read the live issue count from the debug store so the badge reflects
   // background scans even when the DebugPanel isn't open.
   const issueCount = useDebugStore((s) => s.result?.issues.length ?? 0);
-  const serverRunning = useTerminalStore((s) => s.serverRunning);
 
   const renderItems = (items: ActivityItem[]) =>
     items.map(({ id, icon: Icon, label }) => {
       const isActive = active === id;
       const showBadge = id === "debug" && issueCount > 0 && !isActive;
-      const showServerBadge = id === "terminal" && serverRunning;
       return (
         <button
           key={id}
           type="button"
-          onClick={() => {
-            if (id === "terminal") {
-              // Terminal icon toggles the bottom panel
-              useTerminalStore.getState().togglePanel();
-              // Also switch activity view to explorer if not already
-              if (active !== "explorer") onSelect("explorer");
-            } else {
-              onSelect(id);
-            }
-          }}
+          onClick={() => onSelect(id)}
           title={showBadge ? `${label} — ${issueCount} ${issueCount === 1 ? "issue" : "issues"} found` : label}
           aria-label={label}
-          aria-pressed={isActive || (id === "terminal" && useTerminalStore.getState().showPanel)}
+          aria-pressed={isActive}
           className={`group relative flex h-11 w-12 items-center justify-center transition-colors ${
-            isActive || (id === "terminal" && useTerminalStore.getState().showPanel)
-              ? "text-foreground"
-              : "text-muted-2 hover:text-foreground"
+            isActive ? "text-foreground" : "text-muted-2 hover:text-foreground"
           }`}
         >
           {/* VS Code-style left accent bar for active view */}
@@ -96,10 +79,6 @@ export function ActivityBar({ active, onSelect }: ActivityBarProps) {
               <span className="absolute size-2.5 animate-ping rounded-full bg-danger opacity-75" />
               <span className="relative size-2 rounded-full bg-danger shadow-[0_0_4px_rgba(255,0,0,0.8)]" />
             </span>
-          )}
-          {/* Green indicator when dev server is running */}
-          {showServerBadge && !isActive && (
-            <span className="absolute right-2.5 top-2.5 size-2 rounded-full bg-green-400 shadow-[0_0_4px_rgba(74,222,128,0.6)]" />
           )}
         </button>
       );

@@ -1,12 +1,13 @@
 "use client";
 
 import { useState, useRef, useCallback, useEffect } from "react";
-import { File, FileCode, FileCog, FileJson, FilePlus, FileText, Folder, FolderOpen, FolderPlus, RefreshCw, Upload, ChevronDown, ChevronRight, Pencil, Trash2, Check, X, PanelLeftClose } from "lucide-react";
+import { File, FileCode, FileCog, FileJson, FilePlus, FileText, Folder, FolderOpen, FolderPlus, RefreshCw, Upload, ChevronDown, ChevronRight, Pencil, Trash2, Check, X, PanelLeftClose, Download } from "lucide-react";
 import { useProjectStore } from "@/stores/useProjectStore";
 import { useFileStore } from "@/stores/useFileStore";
 import { useEditorStore } from "@/stores/useEditorStore";
 import { languageForFile } from "@/lib/languages";
 import { iconForFile } from "@/lib/fileIcons";
+import { downloadBlob } from "@/lib/exportZip";
 import type { FileDTO } from "@/lib/api/client";
 import { ProjectSwitcher } from "@/components/ide/ProjectSwitcher";
 import { ContextMenu, type ContextMenuState } from "./ContextMenu";
@@ -53,6 +54,14 @@ export function FileTreePanel({ onCollapse }: { onCollapse?: () => void }) {
       language: languageForFile(data.name),
       dirty: false,
     });
+  }
+
+  /** Download a file — preferring the live (possibly unsaved) tab content. */
+  function downloadFile(data: FileDTO) {
+    if (data.type !== "file") return;
+    const tab = useEditorStore.getState().tabs.find((t) => t.fileId === data.id);
+    const content = tab?.content ?? data.content ?? "";
+    downloadBlob(new Blob([content], { type: "text/plain;charset=utf-8" }), data.name);
   }
 
   useEffect(() => {
@@ -314,6 +323,7 @@ export function FileTreePanel({ onCollapse }: { onCollapse?: () => void }) {
                 onConfirmDelete={(n) => setConfirmDeleteId(n.id)}
                 onExecuteDelete={confirmDelete}
                 onCancelDelete={() => setConfirmDeleteId(null)}
+                onDownloadFile={downloadFile}
                 onContextMenu={onContextMenu}
               />
             ))}
@@ -345,6 +355,7 @@ export function FileTreePanel({ onCollapse }: { onCollapse?: () => void }) {
           }}
           onRename={(node) => { setRenamingId(node.id); setRenameName(node.name); }}
           onDelete={(node) => setConfirmDeleteId(node.id)}
+          onDownload={downloadFile}
         />
       )}
     </div>
@@ -370,6 +381,7 @@ interface FileTreeRowProps {
   onConfirmDelete: (node: FileDTO) => void;
   onExecuteDelete: () => void;
   onCancelDelete: () => void;
+  onDownloadFile: (data: FileDTO) => void;
   onContextMenu: (e: React.MouseEvent, node: FileDTO | null) => void;
 }
 
@@ -459,6 +471,11 @@ function FileTreeRow(props: FileTreeRowProps) {
           </div>
         ) : showActions ? (
           <div className="flex items-center gap-0.5" onClick={(e) => e.stopPropagation()}>
+            {!isFolder && (
+              <button onClick={() => props.onDownloadFile(data)} className="rounded p-1 text-muted hover:bg-panel hover:text-foreground" title={`Download ${data.name}`}>
+                <Download className="size-3" />
+              </button>
+            )}
             <button onClick={() => props.onStartRename(data)} className="rounded p-1 text-muted hover:bg-panel hover:text-foreground" title="Rename">
               <Pencil className="size-3" />
             </button>

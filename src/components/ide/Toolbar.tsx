@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { ChevronDown, Eye, Undo2, Redo2, LogOut, Sun, Moon, LayoutDashboard, FileArchive, Download, FileUp } from "lucide-react";
+import { ChevronDown, Eye, Undo2, Redo2, LogOut, Sun, Moon, LayoutDashboard, FileArchive, Download, FileUp, Play, Square } from "lucide-react";
 import { getEditor, useEditorBridge } from "@/lib/editorBridge";
+import { useRunStore } from "@/stores/useRunStore";
 import { useTheme } from "@/hooks/useTheme";
 import { ZipUploadModal } from "./ZipUploadModal";
 import { ZipExportModal } from "./ZipExportModal";
@@ -26,6 +27,9 @@ export function Toolbar({ aiChatVisible, onToggleAiChat, explorerVisible, onTogg
   const isLight = mode === "light";
   const canUndo = useEditorBridge((s) => s.canUndo);
   const canRedo = useEditorBridge((s) => s.canRedo);
+  const running = useRunStore((s) => s.running);
+  const startRun = useRunStore((s) => s.start);
+  const stopRun = useRunStore((s) => s.stop);
 
   useEffect(() => {
     const onDown = (e: MouseEvent) => {
@@ -71,6 +75,38 @@ export function Toolbar({ aiChatVisible, onToggleAiChat, explorerVisible, onTogg
           title="Redo (Ctrl+Shift+Z)"
         >
           <Redo2 className="size-4" />
+        </button>
+      </div>
+
+      <div className="mx-2 h-4 w-px bg-border" />
+
+      {/* Run / Stop — starts and stops the live site preview */}
+      <div data-tour="ide-run" className="flex items-center gap-0.5 rounded-lg border border-border bg-background/60 p-0.5">
+        <button
+          type="button"
+          onClick={startRun}
+          className="flex items-center gap-1.5 rounded-md px-2 py-1 text-xs font-medium text-success transition hover:bg-success/10"
+          title={running ? "Site is running — click to reopen the Preview tab" : "Run your site"}
+        >
+          {running ? (
+            <span className="relative flex size-2" aria-hidden="true">
+              <span className="absolute inline-flex size-2 animate-ping rounded-full bg-success opacity-60" />
+              <span className="relative inline-flex size-2 rounded-full bg-success" />
+            </span>
+          ) : (
+            <Play className="size-3.5" />
+          )}
+          <span>{running ? "Running" : "Run"}</span>
+        </button>
+        <button
+          type="button"
+          onClick={stopRun}
+          disabled={!running}
+          className="flex items-center gap-1.5 rounded-md px-2 py-1 text-xs font-medium text-danger transition hover:bg-danger/10 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent"
+          title="Stop your site"
+        >
+          <Square className="size-3.5" />
+          <span>Stop</span>
         </button>
       </div>
 

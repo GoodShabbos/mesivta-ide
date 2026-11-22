@@ -39,7 +39,7 @@ export function PreviewPanel() {
     <div className="relative flex h-full flex-col bg-background">
       <iframe
         key={version}
-        sandbox="allow-scripts allow-modals"
+        sandbox="allow-scripts allow-modals allow-same-origin"
         srcDoc={srcDoc}
         className="flex-1 border-0 bg-white"
         title="Preview"

@@ -1,5 +1,4 @@
 @import "tailwindcss";
-@import "@xterm/xterm/css/xterm.css";
 
 /* ===== Dark-first theme tokens (no light :root bleed — see tailwind-shadcn-dark-default.md) ===== */
 :root {
@@ -151,6 +150,11 @@ body {
   -webkit-mask-image: radial-gradient(ellipse 90% 80% at 50% 35%, black 30%, transparent 78%);
 }
 
+@keyframes rise {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: none; }
+}
+
 @keyframes signInCardIn {
   from { opacity: 0; transform: translateY(14px) scale(0.985); }
   to   { opacity: 1; transform: translateY(0) scale(1); }
@@ -199,3 +203,31 @@ html[data-tour-active] [data-tour-hide-after] [data-tour] * {
 .hljs-addition { color: #89d185; background: hsl(142 56% 40% / 0.15); }
 .hljs-emphasis { font-style: italic; }
 .hljs-strong { font-weight: 600; }
+
+
+/* ===== Club landing site (light/dark via html.light, shared with the IDE toggle) ===== */
+.club {
+  --c-bg: #17171d;
+  --c-surface: #22222b;
+  --c-border: #33333f;
+  --c-text: #f9fafc;
+  --c-soft: #c0ccda;
+  --c-muted: #8492a6;
+  --c-red: #ec3750;
+  --c-dot: rgba(249, 250, 252, 0.09);
+}
+:root.light .club {
+  --c-bg: #f9fafc;
+  --c-surface: #ffffff;
+  --c-border: #e0e6ed;
+  --c-text: #1f2d3d;
+  --c-soft: #3c4858;
+  --c-muted: #8492a6;
+  --c-dot: rgba(31, 45, 61, 0.12);
+}
+
+
+
+@media (prefers-reduced-motion: reduce) {
+  .club [class*="animate-"] { animation: none !important; }
+}

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback, useRef } from "react";
-import { useTerminalStore } from "@/stores/useTerminalStore";
+import { useRunStore } from "@/stores/useRunStore";
 import { useProjectStore } from "@/stores/useProjectStore";
 import {
   Monitor,
@@ -19,8 +19,7 @@ const DEVICE_PRESETS = [
 ] as const;
 
 export function LivePreview() {
-  const serverRunning = useTerminalStore((s) => s.serverRunning);
-  const serverPort = useTerminalStore((s) => s.serverPort);
+  const running = useRunStore((s) => s.running);
   const project = useProjectStore((s) => s.current);
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [previewKey, setPreviewKey] = useState(0);
@@ -37,22 +36,22 @@ export function LivePreview() {
     return <div className="flex h-full items-center justify-center text-xs text-muted-2">No project</div>;
   }
 
-  if (!serverRunning) {
+  if (!running) {
     return (
       <div className="flex h-full flex-col items-center justify-center gap-3 text-sm text-muted-2">
         <Globe className="size-10 opacity-30" />
-        <span>No server running</span>
-        <span className="text-xs text-muted-2/70">Start your site with <code className="rounded bg-panel-2 px-1.5 py-0.5 font-mono text-xs">npm start</code> in the terminal</span>
+        <span>Preview not running</span>
+        <span className="text-xs text-muted-2/70">Press <code className="rounded bg-panel-2 px-1.5 py-0.5 font-mono text-xs">Run</code> in the toolbar to start your site</span>
       </div>
     );
   }
 
-  // Keep the trailing slash so relative asset URLs in index.html resolve
-  // beneath this project's virtual server path.
-  const previewUrl = `/api/serve/${project.id}/`;
+  // Serve index.html directly — relative asset URLs (e.g. css/style.css) then
+  // resolve against the project root with no redirect involved.
+  const previewUrl = `/api/serve/${project.id}/index.html`;
 
   // For display, show simulated localhost URL
-  const displayUrl = `http://localhost:${serverPort}`;
+  const displayUrl = "http://localhost:3000";
 
   return (
     <div className="flex h-full flex-col bg-[#1a1a2e]">
@@ -119,7 +118,9 @@ export function LivePreview() {
             ref={iframeRef}
             src={previewUrl}
             className="h-full w-full border-0"
-            sandbox="allow-scripts allow-modals"
+            // allow-same-origin keeps the preview on the app's origin so the
+            // session cookie flows to subresource requests (css/js/images).
+            sandbox="allow-scripts allow-modals allow-same-origin"
             title="Live Preview"
           />
         </div>

@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { Group as PanelGroup, Panel, Separator as PanelResizeHandle } from "react-resizable-panels";
-import { useTerminalStore } from "@/stores/useTerminalStore";
 import { Toolbar } from "./Toolbar";
 import { Sidebar } from "./Sidebar";
 import { ActivityBar } from "./ActivityBar";
@@ -10,12 +9,10 @@ import { EditorArea } from "@/components/editor/EditorArea";
 import { RightDock } from "./RightDock";
 import { DebugPanel } from "@/components/debug/DebugPanel";
 import { CodingGuide } from "@/components/guide/CodingGuide";
-import { BottomPanel } from "./BottomPanel";
 import { useBackgroundDebugScan } from "@/hooks/useBackgroundDebugScan";
 import type { ActivityView } from "./ActivityBar";
 
 export function Shell({ onLogout }: { onLogout: () => void }) {
-  const showBottomPanel = useTerminalStore((s) => s.showPanel);
   const [aiChatVisible, setAiChatVisible] = useState(true);
   const [explorerVisible, setExplorerVisible] = useState(true);
   const [activityView, setActivityView] = useState<ActivityView>("explorer");
@@ -45,20 +42,13 @@ export function Shell({ onLogout }: { onLogout: () => void }) {
   );
 
   // Intro-tour hooks: the tour dispatches window events to open specific IDE
-  // views so it can spotlight them (guide view, debug view, terminal panel).
+  // views so it can spotlight them (debug view, guide view).
   useEffect(() => {
-    const openTerminal = () => {
-      useTerminalStore.getState().openPanel();
-      setActivityView((v) => (v === "guide" || v === "debug" ? "explorer" : v));
-      setExplorerVisible(true);
-    };
     const openDebug = () => setActivityView("debug");
     const openGuide = () => setActivityView("guide");
-    window.addEventListener("tour:open-terminal", openTerminal);
     window.addEventListener("tour:open-debug", openDebug);
     window.addEventListener("tour:open-guide", openGuide);
     return () => {
-      window.removeEventListener("tour:open-terminal", openTerminal);
       window.removeEventListener("tour:open-debug", openDebug);
       window.removeEventListener("tour:open-guide", openGuide);
     };
@@ -143,20 +133,7 @@ export function Shell({ onLogout }: { onLogout: () => void }) {
                 </>
               )}
               <Panel minSize="30%">
-                {/* Vertical split: editor on top, terminal/preview on bottom */}
-                <PanelGroup orientation="vertical" id="ide-editor-split">
-                  <Panel defaultSize={showBottomPanel ? 60 : 100} minSize="20%">
-                    <EditorArea />
-                  </Panel>
-                  {showBottomPanel && (
-                    <>
-                      <PanelResizeHandle className="h-px bg-border transition-colors hover:bg-accent/50" />
-                      <Panel defaultSize="40%" minSize="15%" maxSize="70%">
-                        <BottomPanel />
-                      </Panel>
-                    </>
-                  )}
-                </PanelGroup>
+                <EditorArea />
               </Panel>
               {aiChatVisible && (
                 <>

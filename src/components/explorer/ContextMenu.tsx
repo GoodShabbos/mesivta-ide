@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { FilePlus, FolderPlus, Pencil, Trash2 } from "lucide-react";
+import { FilePlus, FolderPlus, Pencil, Trash2, Download } from "lucide-react";
 import type { FileDTO } from "@/lib/api/client";
 
 export interface ContextMenuState {
@@ -17,9 +17,10 @@ interface Props {
   onCreateFolder: (parent: string | null) => void;
   onRename: (node: FileDTO) => void;
   onDelete: (node: FileDTO) => void;
+  onDownload: (node: FileDTO) => void;
 }
 
-export function ContextMenu({ state, onClose, onCreateFile, onCreateFolder, onRename, onDelete }: Props) {
+export function ContextMenu({ state, onClose, onCreateFile, onCreateFolder, onRename, onDelete, onDownload }: Props) {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -43,6 +44,9 @@ export function ContextMenu({ state, onClose, onCreateFile, onCreateFolder, onRe
     >
       {node && (
         <>
+          {node.type === "file" && (
+            <MenuItem icon={<Download className="size-4" />} label="Download" onClick={() => { onDownload(node); onClose(); }} />
+          )}
           <MenuItem icon={<Pencil className="size-4" />} label="Rename" onClick={() => { onRename(node); onClose(); }} />
           <MenuItem icon={<Trash2 className="size-4" />} label="Delete" danger onClick={() => { onDelete(node); onClose(); }} />
           <div className="my-1.5 h-px bg-border/80" />

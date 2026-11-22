@@ -70,8 +70,6 @@ function labelFor(view: ActivityView): string {
       return "Source Control";
     case "settings":
       return "Settings";
-    case "terminal":
-      return "Terminal";
     default:
       return view;
   }

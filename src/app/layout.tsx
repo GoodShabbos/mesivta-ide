@@ -17,7 +17,7 @@ export default function RootLayout({
       <head>
         <link
           rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/@fontsource/phantom-sans@5.0.0/index.min.css"
+          href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=JetBrains+Mono:wght@400;700&display=swap"
         />
       </head>
       <body className="h-full overflow-hidden bg-background text-foreground">

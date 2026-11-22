@@ -368,6 +368,9 @@ export function AssistantPanel() {
                     </div>
                   );
                 })}
+                {/* Thinking bubble — sits where the response will arrive while
+                    the request is in flight and no text has streamed yet. */}
+                {sending && !messages.some((m) => m.id === "streaming") && <ThinkingBubble />}
               </div>
             )}
           </div>
@@ -539,6 +542,28 @@ function MessageItem({ role, content }: { role: string; content: string }) {
   return (
     <div className="rounded-md border border-accent/15 bg-background px-3 py-2">
       <Markdown content={content} />
+    </div>
+  );
+}
+
+/** Placeholder bubble shown while waiting for the AI response to begin. */
+function ThinkingBubble() {
+  return (
+    <div
+      className="inline-flex w-fit items-center gap-2.5 self-start rounded-md border border-accent/15 bg-background px-3 py-2.5"
+      role="status"
+      aria-label="Assistant is thinking"
+    >
+      <span className="text-xs font-medium text-muted-2">Thinking</span>
+      <span className="flex items-center gap-1">
+        {[0, 1, 2].map((d) => (
+          <span
+            key={d}
+            className="size-1.5 animate-bounce rounded-full bg-accent/80"
+            style={{ animationDelay: `${d * 150}ms` }}
+          />
+        ))}
+      </span>
     </div>
   );
 }

@@ -57,7 +57,7 @@ export const INTRO_TOUR_STEPS: TourStep[] = [
     label: "Dashboard",
     title: "The IDE is where you build",
     description:
-      "The Mesivta IDE is a real code editor in your browser — files, tabs, terminal, preview, and an AI assistant.",
+      "The Mesivta IDE is a real code editor in your browser — files, tabs, live preview, and an AI assistant.",
     side: "bottom",
   },
   {
@@ -97,7 +97,7 @@ export const INTRO_TOUR_STEPS: TourStep[] = [
     label: "Mesivta IDE",
     title: "Your toolbox",
     description:
-      "The activity bar switches between the Explorer (your files), the Coding Guide, the Debugger, and the Terminal.",
+      "The activity bar switches between the Explorer (your files), the Coding Guide, and the Debugger.",
     navigate: "/ide",
     side: "right",
   },
@@ -118,13 +118,12 @@ export const INTRO_TOUR_STEPS: TourStep[] = [
     side: "left",
   },
   {
-    target: "[data-tour='ide-terminal']",
+    target: "[data-tour='ide-run']",
     label: "Mesivta IDE",
-    title: "Terminal & preview",
+    title: "Run your site",
     description:
-      "Run npm start to spin up your site — it appears in the Preview tab next to the terminal. Try typing help.",
-    side: "top",
-    beforeShow: () => window.dispatchEvent(new Event("tour:open-terminal")),
+      "Click Run to spin up your site — it opens in the Preview tab. Click Stop when you're done.",
+    side: "bottom",
   },
   {
     target: "[data-tour='ide-debug']",
@@ -212,7 +211,7 @@ export function IntroTour({ steps, onFinish }: { steps: TourStep[]; onFinish?: (
     let pollTimer: ReturnType<typeof setTimeout> | undefined;
     setWaiting(true);
 
-    // Run the step's side effects FIRST — some targets (terminal panel, debug
+    // Run the step's side effects FIRST — some targets (debug view, guide)
     // view) don't exist in the DOM until the effect has opened them.
     step.beforeShow?.();
 
